@@ -46,7 +46,7 @@ public class PlayerControlsIso : MonoBehaviour, PlayerInput.ICharacterControlsAc
         input.CharacterControls.Jump.started += OnJump;
         input.CharacterControls.Jump.canceled += OnJump;
 
-        setJumpVariables();
+        // setJumpVariables();
     }
 
     public void OnMove(InputAction.CallbackContext ctx)
@@ -73,12 +73,10 @@ public class PlayerControlsIso : MonoBehaviour, PlayerInput.ICharacterControlsAc
 
     void Update()
     {
-        // handleAnimation();
+        handleAnimation();
+        handleGravity();
         handleMove();
         handleRotation();
-        // handleGravity();
-        // handleJump();
-        // handleDoubleJump();
     }
 
     void OnEnable()
@@ -91,34 +89,13 @@ public class PlayerControlsIso : MonoBehaviour, PlayerInput.ICharacterControlsAc
         input.CharacterControls.Disable();
     }
 
-    void setJumpVariables()
-    {
-        //jump variables cannot be zero
-        float timeToApex = maxJumpTime / 2;
-        gravity = (-2 * maxJumpHeight / Mathf.Pow(timeToApex, 2));
-        initialJumpVelocity = (2 * maxJumpHeight) / timeToApex;
-        secondJumpVelocity = (2.8f * maxJumpHeight) / timeToApex;
-    }
-
-    void handleGravity()
-    {
-        if (characterController.isGrounded)
-        {
-            movementDirection.y = groundedGravity;
-        }
-        else
-        {
-            movementDirection.y += gravity * Time.deltaTime;
-        }
-    }
-
     void handleAnimation()
     {
         animator.SetBool("isMoving", isMoving);
-        animator.SetBool("isJumping", isJumping);
-        animator.SetBool("isGrounded", isGrounded);
-        animator.SetBool("isFalling", isFalling);
-        animator.SetBool("isFlipping", isFlipping);
+        // animator.SetBool("isJumping", isJumping);
+        // animator.SetBool("isGrounded", isGrounded);
+        // animator.SetBool("isFalling", isFalling);
+        // animator.SetBool("isFlipping", isFlipping);
     }
 
     void handleMove()
@@ -150,41 +127,15 @@ public class PlayerControlsIso : MonoBehaviour, PlayerInput.ICharacterControlsAc
         // }
     }
 
-    void handleJump()
+    void handleGravity()
     {
-        if(characterController.isGrounded && isJumpPressed && jumpCount == 0)
+        if (characterController.isGrounded)
         {
-            movementDirection.y = initialJumpVelocity;
-            isJumpPressed = false;
-            isJumping = true;
-            jumpCount = 1; 
-        }
-        else if(characterController.isGrounded)
-        {
-            isFalling = false;
-            isGrounded = true;
-            jumpCount = 0;
-        }
-        else if(!characterController.isGrounded)
-        {
-            isFalling = true;
-            isJumping = false;
-            isGrounded = false;
-        }
-    }
-
-    void handleDoubleJump()
-    {
-        if (isJumpPressed && jumpCount == 1)
-        {
-            movementDirection.y = secondJumpVelocity;
-            isFalling = false;
-            isFlipping = true;
-            jumpCount = 0;
+            movementDirection.y = groundedGravity;
         }
         else
         {
-            isFlipping = false;
+            movementDirection.y += gravity * Time.deltaTime;
         }
     }
 }
