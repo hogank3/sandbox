@@ -94,7 +94,7 @@
                     "id": "aca242ba-c486-4c22-b625-fc084af2f6b9",
                     "path": "<Gamepad>/leftStick",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "NormalizeVector2,StickDeadzone",
                     "groups": "Controller",
                     "action": "Move",
                     "isComposite": false,
@@ -124,17 +124,6 @@
                 },
                 {
                     "name": "",
-                    "id": "8665872c-5370-4383-92bf-022d807f6f94",
-                    "path": "<Mouse>/position",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard",
-                    "action": "Shoot",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "0ff7656c-34fd-48f0-8d89-a64d751f284a",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
@@ -143,6 +132,39 @@
                     "action": "Shoot",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "40a5f4a5-e7ea-4173-a3b6-ba93c8d287d8",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Shoot",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "42b4ba2d-a4df-4052-b407-06c668147786",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Shoot",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "75d51ee8-7d68-40b2-9779-d5760b66a50e",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "NormalizeVector2",
+                    "groups": "Keyboard",
+                    "action": "Shoot",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }
