@@ -21,6 +21,9 @@ ModelImporter:
   - first:
       74: -6834819575083969108
     second: SpiderArmature|Spider_Idle (1)
+  - first:
+      74: -1614606954200800256
+    second: SpiderArmature|Spider_Walk (1)
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -50,18 +53,18 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: SpiderArmature|Spider_Idle (1)
-      takeName: SpiderArmature|Spider_Idle
+      name: SpiderArmature|Spider_Attack
+      takeName: SpiderArmature|Spider_Attack
       internalID: 0
       firstFrame: 0
-      lastFrame: 100
+      lastFrame: 18
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
+      loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -119,7 +122,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -177,7 +180,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0

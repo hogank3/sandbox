@@ -9,104 +9,106 @@ using UnityEngine.InputSystem;
 public class PlayerControlsIso : MonoBehaviour, PlayerInput.ICharacterControlsActions
 {
   #region public
-  public float speed;
-  public float shootSpeed;
-  public float rotationSpeed;
-  public float jumpSpeed;
-  public float maxJumpHeight;
-  public float maxJumpTime;
-  public float fireRate = 1.0f;
+  public float speed, shootSpeed, rotationSpeed, jumpSpeed, maxJumpHeight, maxJumpTime, fireRate = 1.0f, health = 5.0f;
   public GameObject firePoint;
   public List<GameObject> vfx = new List<GameObject>();
   #endregion
 
   #region private
-  private GameObject effectToSpawn;
-  private Animator animator;
-  private PlayerInput input;
-  private CharacterController characterController;
-  private Vector2 movementInput;
-  private Vector3 movementTranslate;
-  private Vector3 movementDirection;
-  private Vector3 shootDirection;
-  private float gravity = -6.8f;
-  private float groundedGravity = -.5f;
-  private float initialJumpVelocity;
-  private float secondJumpVelocity;
-  private bool isMovePressed = false;
-  private bool isShootPressed = false;
-  private bool isJumpPressed = false;
-  private bool isMoving = false;
-  private float timer = 0.0f;
+  private GameObject _effectToSpawn;
+  private Animator _animator;
+  private PlayerInput _input;
+  private CharacterController _characterController;
+  private Vector2 _movementInput;
+  private Vector3 _movementTranslate, _movementDirection, _shootDirection;
+  private float _gravity = -6.8f, _groundedGravity = -.5f, _initialJumpVelocity, _secondJumpVelocity, _timer = 0.0f;
+  private bool _isMovePressed = false, _isShootPressed = false, _isJumpPressed = false, _isMoving = false, _isFiring = false;
 
-  Camera mainCamera;
-//   private bool isJumping = false;
-//   private bool isFalling = false;
-//   private bool isGrounded = false;
-//   private int jumpCount = 0;
-//   private bool isFlipping = false;
-  private Quaternion rotation = Quaternion.Euler(0, 45.0f, 0);
-  private Vector2 shootInput;
+  private Camera _mainCamera;
+  private Quaternion rotateAmount = Quaternion.Euler(0, 45.0f, 0);
+  private Vector2 _shootInput;
 
   #endregion
 
   private void Awake()
   {
-    input = new PlayerInput();
-    input.CharacterControls.Move.started += OnMove;
-    input.CharacterControls.Move.performed += OnMove;
-    input.CharacterControls.Move.canceled += OnMove;
-    input.CharacterControls.Jump.started += OnJump;
-    input.CharacterControls.Jump.canceled += OnJump;
-    input.CharacterControls.Shoot.started += OnShoot;
-    input.CharacterControls.Shoot.performed += OnShoot;
-    input.CharacterControls.Shoot.canceled += OnShoot;
+    _input = new PlayerInput();
 
+    //input move
+    _input.CharacterControls.Move.started += OnMove;
+    _input.CharacterControls.Move.performed += OnMove;
+    _input.CharacterControls.Move.canceled += OnMove;
+
+    //input jump
+    _input.CharacterControls.Jump.started += OnJump;
+    _input.CharacterControls.Jump.canceled += OnJump;
+
+    //input shoot
+    _input.CharacterControls.Shoot.started += OnShoot;
+    _input.CharacterControls.Shoot.performed += OnShoot;
+    _input.CharacterControls.Shoot.canceled += OnShoot;
+
+    //input puase
+    _input.CharacterControls.Pause.started += OnPause;
     // setJumpVariables();
+  }
+
+  public void OnPause(InputAction.CallbackContext obj)
+  {
+    //throw new NotImplementedException();
+    //Debug.Log("Pause Pressed");
   }
 
   public void OnShoot(InputAction.CallbackContext obj)
   {
-    shootInput = obj.ReadValue<Vector2>();
-    shootDirection.x = shootInput.x;
-    shootDirection.z = shootInput.y;
-    isShootPressed = shootDirection.x != 0 || shootDirection.z != 0;
-    Vector2 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(shootInput.x, 0.0f, shootInput.y));
-    Debug.Log(worldPos);
+    _shootInput = obj.ReadValue<Vector2>();
+    _shootDirection.x = _shootInput.x;
+    _shootDirection.z = _shootInput.y;
+    _isShootPressed = _shootDirection.x != 0 || _shootDirection.z != 0;
+    //Vector2 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(_shootInput.x, 0.0f, _shootInput.y));
+    //Debug.Log(worldPos);
   }
 
   public void OnMove(InputAction.CallbackContext ctx)
   {
-    movementInput = ctx.ReadValue<Vector2>();
-    movementDirection.x = movementInput.x;
-    movementDirection.z = movementInput.y;
-    // movementTranslate.x = movementInput.x;
-    // movementTranslate.z = movementInput.y;
-    // Matrix4x4 isoMatrix = Matrix4x4.Rotate(rotation);
-    // movementDirection = isoMatrix.MultiplyPoint3x4(movementTranslate);
-    isMovePressed = movementDirection.x != 0 || movementDirection.z != 0;
+    _movementInput = ctx.ReadValue<Vector2>();
+    _movementDirection.x = _movementInput.x;
+    _movementDirection.z = _movementInput.y;
+    // _movementTranslate.x = _movementInput.x;
+    // _movementTranslate.z = _movementInput.y;
+    // Matrix4x4 isoMatrix = Matrix4x4.Rotate(rotateAmount);
+    // _movementDirection = isoMatrix.MultiplyPoint3x4(_movementTranslate);
+    _isMovePressed = _movementDirection.x != 0 || _movementDirection.z != 0;
   }
 
   public void OnJump(InputAction.CallbackContext ctx)
   {
-    isJumpPressed = ctx.ReadValueAsButton();
-    Debug.Log(isJumpPressed);
+    _isJumpPressed = ctx.ReadValueAsButton();
+    Debug.Log(_isJumpPressed);
   }
 
   void Start()
   {
-    characterController = GetComponent<CharacterController>();
-    animator = GetComponent<Animator>();
-    mainCamera = FindObjectOfType<Camera>();
-    effectToSpawn = vfx[0];
+    _characterController = GetComponent<CharacterController>();
+    _animator = GetComponent<Animator>();
+    _mainCamera = FindObjectOfType<Camera>();
+    _effectToSpawn = vfx[0];
+    Physics.IgnoreLayerCollision(2, 2);
   }
 
   void Update()
   {
-    handleAnimation();
-    handleGravity();
-    handleMove();
-    handleRotation();
+    HandleAnimation();
+    HandleGravity();
+    HandleMove();
+    HandleRotation();
+  }
+
+  private void HandleDamage()
+  {
+    health -= 1.0f;
+    if(health <= 0.0f)
+      print("You Died.");
   }
 
   // void FixedUpdate()
@@ -132,79 +134,88 @@ public class PlayerControlsIso : MonoBehaviour, PlayerInput.ICharacterControlsAc
 
   void OnEnable()
   {
-    input.CharacterControls.Enable();
+    _input.CharacterControls.Enable();
   }
 
   void OnDisable()
   {
-    input.CharacterControls.Disable();
+    _input.CharacterControls.Disable();
   }
 
-  void handleAnimation()
+  void HandleAnimation()
   {
-    animator.SetBool("isMoving", isMoving);
-    // animator.SetBool("isJumping", isJumping);
-    // animator.SetBool("isGrounded", isGrounded);
-    // animator.SetBool("isFalling", isFalling);
-    // animator.SetBool("isFlipping", isFlipping);
+    float velocityZ = Vector3.Dot(_movementDirection.normalized, transform.forward);
+    float velocityX = Vector3.Dot(_movementDirection.normalized, transform.right);
+
+    _animator.SetFloat("velocityZ", velocityZ, 0.1f, Time.deltaTime);
+    _animator.SetFloat("velocityX", velocityX, 0.1f, Time.deltaTime);
+
+    _animator.SetBool("isMoving", _isMoving);
+    _animator.SetBool("isFiring", _isFiring);
+    // _animator.SetBool("isJumping", isJumping);
+    // _animator.SetBool("isGrounded", isGrounded);
+    // _animator.SetBool("isFalling", isFalling);
+    // _animator.SetBool("isFlipping", isFlipping);
   }
 
-  void handleMove()
+  void HandleMove()
   {
-    if(isShootPressed)
+    if (_isShootPressed)
     {
-      characterController.Move(movementDirection * Time.deltaTime * shootSpeed);
+      _characterController.Move(_movementDirection * Time.deltaTime * shootSpeed);
     }
     else
     {
-      characterController.Move(movementDirection * Time.deltaTime * speed);
+      _characterController.Move(_movementDirection * Time.deltaTime * speed);
     }
-    isMoving = (movementDirection.x != 0 || movementDirection.z != 0) ? true : false;
-    movementDirection.y += gravity * Time.deltaTime;
+    _isMoving = (_movementDirection.x != 0 || _movementDirection.z != 0) ? true : false;
+    _movementDirection.y += _gravity * Time.deltaTime;
   }
 
-  void handleRotation()
+  void HandleRotation()
   {
-    // Vector3 toLookRoation = new Vector3(movementDirection.x, 0, movementDirection.z);
+    // Vector3 toLookRoation = new Vector3(_movementDirection.x, 0, _movementDirection.z);
     Vector3 toLookRoation;
     Quaternion currentRotation = transform.rotation;
-    
-    if(isShootPressed)
+
+    if (_isShootPressed)
     {
-      toLookRoation.x = shootDirection.x;
+      _isFiring = true;
+
+      toLookRoation.x = _shootDirection.x;
       toLookRoation.y = 0.0f;
-      toLookRoation.z = shootDirection.z;
+      toLookRoation.z = _shootDirection.z;
 
       Quaternion targetRotation = Quaternion.LookRotation(toLookRoation);
       transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, rotationSpeed * Time.deltaTime);
 
-      timer += Time.deltaTime;
+      _timer += Time.deltaTime;
 
-      if(timer > fireRate)
+      if (_timer > fireRate)
       {
         float rayDistance = 10.0f;
         Vector3 origin = transform.position;
         origin.y = 0.8f;
         Vector3 forward = transform.TransformDirection(Vector3.forward) * rayDistance;
         Debug.DrawRay(origin, forward, Color.red);
-  
+
         RaycastHit hit;
-  
+
         if (Physics.Raycast(origin, forward, out hit, rayDistance))
         {
           //print("Hit - distance: " + hit.distance);
           EnemyController enemy = hit.transform.GetComponent<EnemyController>();
-          if(enemy != null)
+          if (enemy != null)
           {
             enemy.TakeDamage(1.0f);
           }
         }
-        timer = 0.0f;
+        _timer = 0.0f;
 
         GameObject vfx;
-        if(firePoint != null)
+        if (firePoint != null)
         {
-          vfx = Instantiate(effectToSpawn, firePoint.transform.position, Quaternion.identity);
+          vfx = Instantiate(_effectToSpawn, firePoint.transform.position, Quaternion.identity);
           vfx.transform.rotation = transform.rotation;
         }
         else
@@ -213,26 +224,40 @@ public class PlayerControlsIso : MonoBehaviour, PlayerInput.ICharacterControlsAc
         }
       }
     }
-    else if (isMovePressed)
+    else if (_isMovePressed)
     {
-      toLookRoation.x = movementDirection.x;
+      _isFiring = false;
+
+      toLookRoation.x = _movementDirection.x;
       toLookRoation.y = 0.0f;
-      toLookRoation.z = movementDirection.z;
+      toLookRoation.z = _movementDirection.z;
 
       Quaternion targetRotation = Quaternion.LookRotation(toLookRoation);
       transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, rotationSpeed * Time.deltaTime);
     }
+    else
+      _isFiring = false;
   }
 
-  void handleGravity()
+  void HandleGravity()
   {
-    if (characterController.isGrounded)
+    if (_characterController.isGrounded)
     {
-      movementDirection.y = groundedGravity;
+      _movementDirection.y = _groundedGravity;
     }
     else
     {
-      movementDirection.y += gravity * Time.deltaTime;
+      _movementDirection.y += _gravity * Time.deltaTime;
+    }
+  }
+
+  void OnControllerColliderHit(ControllerColliderHit colliderHit)
+  {
+    if(colliderHit.gameObject.tag == "Enemy")
+    {
+      HandleDamage();
+      print("collisoin detected");
+      //transform.position = transform.position + (transform.position - colliderHit.transform.position);
     }
   }
 }
